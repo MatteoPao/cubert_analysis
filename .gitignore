@@ -1,0 +1,8 @@
+venv
+cubert_pretrained_model_exceptions
+exception_datasets
+.idea
+cubert/.svn
+cubert/README.md
+
+**/__pycache__
