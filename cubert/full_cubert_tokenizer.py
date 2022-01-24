@@ -1,76 +1,14 @@
-import sys
 import numpy as np
 import itertools
 
-import tensorflow.compat.v1 as tf
-import glob
-import os
-import json
-
+from cubert import code_to_subtokenized_sentences
+from cubert import unified_tokenizer
 from bert import tokenization
 from tensor2tensor.data_generators import text_encoder
-from keras_bert import load_vocabulary, load_trained_model_from_checkpoint, Tokenizer, get_checkpoint_paths
-from cubert import code_to_subtokenized_sentences
-from cubert import tokenizer_registry
-from cubert import unified_tokenizer
-from typing import Any, Dict, List
 
 
-class CuBertFunctionDocstringProcessor:
-
-  def get_labels(self):
-    """See base class."""
-    return ["Correct", "Incorrect"]
-
-
-class CuBertExceptionClassificationProcessor:
-
-  def get_labels(self):
-    """See base class."""
-    return [
-        "ValueError",
-        "KeyError",
-        "AttributeError",
-        "TypeError",
-        "OSError",
-        "IOError",
-        "ImportError",
-        "IndexError",
-        "DoesNotExist",
-        "KeyboardInterrupt",
-        "StopIteration",
-        "AssertionError",
-        "SystemExit",
-        "RuntimeError",
-        "HTTPError",
-        "UnicodeDecodeError",
-        "NotImplementedError",
-        "ValidationError",
-        "ObjectDoesNotExist",
-        "NameError",
-        "None",
-    ]
-
-
-class CuBertVariableMisuseProcessor:
-
-  def get_labels(self):
-    """See base class."""
-    return ["Correct", "Variable misuse"]
-
-
-class CuBertSwappedOperandProcessor:
-
-  def get_labels(self):
-    """See base class."""
-    return ["Correct", "Swapped operands"]
-
-
-class CuBertWrongOperatorProcessor:
-
-  def get_labels(self):
-    """See base class."""
-    return ["Correct", "Wrong binary operator"]
+HOLE_NAME = "__HOLE__"
+UNKNOWN_TOKEN = "unknown_token_default"
 
 class InputFeatures(object):
     """A single set of features of data."""
@@ -138,6 +76,7 @@ class FullCuBertTokenizer:
     """Wraps the CuBERT tokenizers to behave like BERT's tokenization API."""
 
     def __init__(self, code_tokenizer_class, vocab_file):
+
         # "Tokenizer" going from code to subtokenized sentences:
         self.code_tokenizer = code_tokenizer_class()
         # CuBERT skips Comments/Whitespace in finetuned tasks.
@@ -152,6 +91,7 @@ class FullCuBertTokenizer:
             unified_tokenizer.TokenKind.COMMENT,
             unified_tokenizer.TokenKind.WHITESPACE,
         ))
+
         self.subwork_tokenizer = text_encoder.SubwordTextEncoder(vocab_file)
 
     def tokenize(self, text):
@@ -246,119 +186,58 @@ class FullCuBertTokenizer:
         return feature
 
 
-def _read_jsonl(input_file):
-    """Reads a tab-separated value file."""
-    with tf.gfile.Open(input_file, "r") as f:
-        for line in f:
-            yield json.loads(line)
+class CuBertFunctionDocstringProcessor:
+
+  def get_labels(self):
+    """See base class."""
+    return ["Correct", "Incorrect"]
 
 
-def _create_examples(raw_examples, set_type):
-    """Creates a single example from the loaded JSON dictionary."""
-    examples = []
-    for (i, example) in enumerate(raw_examples):
-        guid = "%s-%s" % (set_type, i)
-        # No convert_to_unicode here, since the CuBERT datasets are already
-        # generated as valid Unicode when released, and parsed in as Unicode
-        # directly during data reading.
-        text_a = example["function"]
-        label = example["label"]
-        examples.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
-    return examples
+class CuBertExceptionClassificationProcessor:
+
+  def get_labels(self):
+    """See base class."""
+    return [
+        "ValueError",
+        "KeyError",
+        "AttributeError",
+        "TypeError",
+        "OSError",
+        "IOError",
+        "ImportError",
+        "IndexError",
+        "DoesNotExist",
+        "KeyboardInterrupt",
+        "StopIteration",
+        "AssertionError",
+        "SystemExit",
+        "RuntimeError",
+        "HTTPError",
+        "UnicodeDecodeError",
+        "NotImplementedError",
+        "ValidationError",
+        "ObjectDoesNotExist",
+        "NameError",
+        "None",
+    ]
 
 
-def _read_examples_from_jsonls(data_dir, set_type):
-    examples: List[Dict[str, Any]] = []
-    for file in glob.glob(os.path.join(data_dir, f"{set_type}.jsontxt-*")):
-        examples.extend(_read_jsonl(file))
-    return _create_examples(examples, set_type)
+class CuBertVariableMisuseProcessor:
+
+  def get_labels(self):
+    """See base class."""
+    return ["Correct", "Variable misuse"]
 
 
-HOLE_NAME = "__HOLE__"
-UNKNOWN_TOKEN = "unknown_token_default"
-flags = tf.flags
-FLAGS = flags.FLAGS
+class CuBertSwappedOperandProcessor:
 
-flags.DEFINE_enum_class(
-    "code_tokenizer",
-    default=tokenizer_registry.TokenizerEnum.PYTHON,
-    enum_class=tokenizer_registry.TokenizerEnum,
-    help="The tokenizer to use.")
-
-flags.DEFINE_integer(
-    "max_seq_length", 128,
-    "The maximum total input sequence length after WordPiece tokenization. "
-    "Sequences longer than this will be truncated, and sequences shorter "
-    "than this will be padded.")
+  def get_labels(self):
+    """See base class."""
+    return ["Correct", "Swapped operands"]
 
 
-print('This demo demonstrates how to load the pre-trained model and check whether the two sentences are continuous')
+class CuBertWrongOperatorProcessor:
 
-if len(sys.argv) == 3:
-    model_path = sys.argv[1]
-    data_path = sys.argv[2]
-else:
-    from keras_bert.datasets import get_pretrained, PretrainedList
-
-    model_path = get_pretrained(PretrainedList.chinese_base)
-
-paths = get_checkpoint_paths(model_path)
-print(paths)
-#vars_in_checkpoint = tf.train.list_variables(paths.checkpoint)
-#print(vars_in_checkpoint)
-
-model = load_trained_model_from_checkpoint(paths.config, paths.checkpoint, training=True, seq_len=128)
-model.summary()
-
-examples = _read_examples_from_jsonls(data_path, "eval")
-print("STAMPA TEST ESEMPIO 0")
-print(examples[0])
-print(examples[0].guid)
-print(examples[0].text_a)
-print(examples[0].text_b)
-print(examples[0].label)
-print("STAMPA TEST ESEMPIO 1")
-print(examples[5])
-print(examples[5].guid)
-print(examples[5].text_a)
-print(examples[5].text_b)
-print(examples[5].label)
-
-tokenizer = FullCuBertTokenizer(
-    code_tokenizer_class=FLAGS.code_tokenizer.value,
-    vocab_file=paths.vocab)
-
-processors = {
-    "docstring": CuBertFunctionDocstringProcessor,
-    "exception": CuBertExceptionClassificationProcessor,
-    "varmisuse": CuBertVariableMisuseProcessor,
-    "swappedop": CuBertSwappedOperandProcessor,
-    "wrongop": CuBertWrongOperatorProcessor,
-}
-processor = processors["exception"]()
-label_list = processor.get_labels()
-
-s_f = list()
-s_f.append(tokenizer.convert_single_example(examples[0], label_list, FLAGS.max_seq_length))
-s_f.append(tokenizer.convert_single_example(examples[1], label_list, FLAGS.max_seq_length))
-s_f.append(tokenizer.convert_single_example(examples[2], label_list, FLAGS.max_seq_length))
-print(np.array(s_f).shape)
-
-print("STAMPA ARRAY COMPLETO")
-print([np.expand_dims(np.array(s_f[0].input_ids), axis=0), np.expand_dims(np.array(s_f[0].segment_ids), axis=0), np.expand_dims(np.array(s_f[0].input_mask), axis=0)])
-print([np.expand_dims(np.array(s_f[0].input_ids), axis=0).shape, np.expand_dims(np.array(s_f[0].segment_ids), axis=0).shape, np.expand_dims(np.array(s_f[0].input_mask), axis=0).shape])
-
-predicts = list()
-predicts.append(model.predict([np.expand_dims(np.array(s_f[0].input_ids), axis=0),
-                               np.expand_dims(np.array(s_f[0].segment_ids), axis=0),
-                               np.expand_dims(np.array(s_f[0].input_mask), axis=0)]))
-predicts.append(model.predict([np.expand_dims(np.array(s_f[1].input_ids), axis=0),
-                               np.expand_dims(np.array(s_f[1].segment_ids), axis=0),
-                               np.expand_dims(np.array(s_f[1].input_mask), axis=0)]))
-predicts.append(model.predict([np.expand_dims(np.array(s_f[2].input_ids), axis=0),
-                               np.expand_dims(np.array(s_f[2].segment_ids), axis=0),
-                               np.expand_dims(np.array(s_f[2].input_mask), axis=0)]))
-
-print(predicts[0])
-print(predicts[1])
-print(predicts[2])
+  def get_labels(self):
+    """See base class."""
+    return ["Correct", "Wrong binary operator"]
