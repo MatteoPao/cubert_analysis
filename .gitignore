@@ -3,8 +3,8 @@ results
 cubert_pretrained_model_exceptions
 exception_datasets
 .idea
-cubert/.svn
-cubert/README.md
+src/cubert/.svn
+src/cubert/README.md
 
 **/__pycache__
 main_test.py

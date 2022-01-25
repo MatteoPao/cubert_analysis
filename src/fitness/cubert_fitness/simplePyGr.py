@@ -1,4 +1,4 @@
-from src.fitness.base_ff_classes.base_ff import base_ff
+from fitness.base_ff_classes.base_ff import base_ff
 from keras_bert import load_trained_model_from_checkpoint, get_checkpoint_paths
 from cubert.full_cubert_tokenizer import FullCuBertTokenizer, CuBertExceptionClassificationProcessor, InputExample
 from cubert import tokenizer_registry
