@@ -3,7 +3,8 @@ dopamine-rl==3.0.1
 regex
 tensor2tensor
 tensorflow
-
+keras_transformer
 matplotlib
 pandas
 scikit-learn
+javalang
