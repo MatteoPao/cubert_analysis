@@ -65,4 +65,4 @@ class simplePyGr(base_ff):
                                          np.expand_dims(np.array(guess.segment_ids), axis=0),
                                          np.expand_dims(np.array(guess.input_mask), axis=0)])
 
-        return prediction[0][0] * 100
+        return prediction[0][1] * 100
