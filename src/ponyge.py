@@ -12,7 +12,9 @@ from utilities.algorithm.general import check_python_version
 check_python_version()
 
 from stats.stats import get_stats
+from utilities.stats.save_plots import save_plot_from_file
 from algorithm.parameters import params, set_params
+from os import path
 import sys
 
 
@@ -24,6 +26,8 @@ def mane():
 
     # Print final review
     get_stats(individuals, end=True)
+
+    save_plot_from_file(path.join(params['FILE_PATH'], "stats.tsv"), ["ave_fitness", "best_fitness"])
 
 
 if __name__ == "__main__":

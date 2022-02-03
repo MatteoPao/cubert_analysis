@@ -12,6 +12,8 @@ runtime_error_cache = []
 best_fitness_list = []
 # fitness_plot is simply a list of the best fitnesses at each generation.
 # Useful for plotting evolutionary progress.
+#best_ave_fitness_list = []
+
 
 first_pareto_list = []
 # first_pareto_list stores the list of all individuals stored on the first

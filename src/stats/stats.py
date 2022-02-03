@@ -101,6 +101,7 @@ def get_soo_stats(individuals, end):
     if params['SAVE_PLOTS'] and not params['DEBUG']:
         if not end:
             trackers.best_fitness_list.append(trackers.best_ever.fitness)
+            #gitrackers.best_ave_fitness_list.append(stats["ave_fitness"])
 
         if params['VERBOSE'] or end:
             save_plot_from_data(trackers.best_fitness_list, "best_fitness")

@@ -95,7 +95,7 @@ def save_plot_from_data(data, name):
     plt.close()
 
 
-def save_plot_from_file(filename, stat_name):
+def save_plot_from_file(filename, stat_names_list):
     """
     Saves a plot of a given stat from the stats file.
 
@@ -104,30 +104,32 @@ def save_plot_from_file(filename, stat_name):
     :return: Nothing.
     """
 
-    # Read in the data
-    data = pd.read_csv(filename, sep="\t")
-    try:
-        stat = list(data[stat_name])
-    except KeyError:
-        s = "utilities.stats.save_plots.save_plot_from_file\n" \
-            "Error: stat %s does not exist" % stat_name
-        raise Exception(s)
+    from algorithm.parameters import params
 
-        # Set up the figure.
+    # Set up the figure.
     fig = plt.figure()
     ax1 = fig.add_subplot(1, 1, 1)
 
-    # Plot the data.
-    ax1.plot(stat)
+    # Read in the data
+    data = pd.read_csv(filename, sep="\t")
+    try:
+        for stat_name in stat_names_list:
+            stat = list(data[stat_name])
 
+            # Plot the data.
+            ax1.plot(stat, label=stat_name)
+
+    except KeyError:
+        s = "utilities.stats.save_plots.save_plot_from_file\n" \
+            "Error: one or more stats between %s does not exist" % stat_names_list
+        raise Exception(s)
+
+    ax1.legend()
     # Plot title.
-    plt.title(stat_name)
-
-    # Get save path
-    save_path = pathsep.join(filename.split(pathsep)[:-1])
+    plt.title("Stats_plot")
 
     # Save plot and close.
-    plt.savefig(path.join(save_path, (stat_name + '.pdf')))
+    plt.savefig(path.join(params['FILE_PATH'], 'Stats_plot.pdf'))
     plt.close()
 
 
