@@ -24,6 +24,7 @@ def build_model_from_config(config_file,
                             trainable=None,
                             output_layer_num=1,
                             seq_len=int(1e9),
+                            out_dim=2,
                             **kwargs):
     """Build the model from config file.
 
@@ -43,6 +44,7 @@ def build_model_from_config(config_file,
         config['max_position_embeddings'] = seq_len = min(seq_len, config['max_position_embeddings'])
     if trainable is None:
         trainable = training
+
     model = get_model(
         token_num=config['vocab_size'],
         pos_num=config['max_position_embeddings'],
@@ -55,7 +57,9 @@ def build_model_from_config(config_file,
         training=training,
         trainable=trainable,
         output_layer_num=output_layer_num,
+        out_dim=out_dim,
         **kwargs)
+
     if not training:
         inputs, outputs = model
         model = keras.models.Model(inputs=inputs, outputs=outputs)
@@ -136,6 +140,7 @@ def load_model_weights_from_checkpoint(model,
             loader('bert/pooler/dense/kernel'),
             loader('bert/pooler/dense/bias'),
         ])
+        #print(model.get_layer(name='NSP').)
         model.get_layer(name='NSP').set_weights([
             np.transpose(loader('output_weights')),
             loader('output_bias'),
@@ -148,6 +153,7 @@ def load_trained_model_from_checkpoint(config_file,
                                        trainable=None,
                                        output_layer_num=1,
                                        seq_len=int(1e9),
+                                       out_dim=2,
                                        **kwargs):
     """Load trained official model from checkpoint.
 
@@ -168,6 +174,7 @@ def load_trained_model_from_checkpoint(config_file,
         trainable=trainable,
         output_layer_num=output_layer_num,
         seq_len=seq_len,
+        out_dim=out_dim,
         **kwargs)
     load_model_weights_from_checkpoint(model, config, checkpoint_file, training=training)
     return model

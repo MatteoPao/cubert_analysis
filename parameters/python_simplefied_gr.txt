@@ -3,7 +3,7 @@ CODON_SIZE:             100000
 CROSSOVER:              variable_onepoint
 CROSSOVER_PROBABILITY:  0.75
 DEBUG:                  False
-GENERATIONS:            3
+GENERATIONS:            1
 MAX_GENOME_LENGTH:      500
 GRAMMAR_FILE:           simplefied_gr.pybnf
 INITIALISATION:         PI_grow
@@ -13,8 +13,9 @@ MAX_TREE_DEPTH:         17
 MUTATION:               int_flip_per_codon
 MUTATION_PROBABILITY:   None
 POPULATION_SIZE:        10
-FITNESS_FUNCTION:       cubert_fitness.simplePyGr
+FITNESS_FUNCTION:       cubert_fitness.variableMisuse
 REPLACEMENT:            generational
 SELECTION:              tournament
 TOURNAMENT_SIZE:        2
-VERBOSE:                True
+VERBOSE:                False
+DEBUG:                  True

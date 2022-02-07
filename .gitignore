@@ -1,6 +1,6 @@
 venv
 results
-cubert_pretrained_model_exceptions
+cubert_pretrained_model_*
 exception_datasets
 .idea
 src/cubert/.svn

@@ -36,7 +36,8 @@ def get_model(token_num,
               trainable=None,
               output_layer_num=1,
               use_task_embed=False,
-              task_num=10):
+              task_num=10,
+              out_dim=2):
     """Get BERT model.
 
     See: https://arxiv.org/pdf/1810.04805.pdf
@@ -140,7 +141,7 @@ def get_model(token_num,
         '''
         # NEW
         nsp_pred_layer = keras.layers.Dense(
-            units=21,
+            units=out_dim,
             activation='softmax',
             name='NSP',
         )(nsp_dense_layer)

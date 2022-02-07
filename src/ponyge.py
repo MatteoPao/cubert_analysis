@@ -27,7 +27,8 @@ def mane():
     # Print final review
     get_stats(individuals, end=True)
 
-    save_plot_from_file(path.join(params['FILE_PATH'], "stats.tsv"), ["ave_fitness", "best_fitness"])
+    if not params['DEBUG']:
+        save_plot_from_file(path.join(params['FILE_PATH'], "stats.tsv"), ["ave_fitness", "best_fitness"])
 
 
 if __name__ == "__main__":
