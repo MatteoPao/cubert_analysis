@@ -118,28 +118,9 @@ class FullCuBertTokenizer:
         tokens_a = self.tokenize(example.text_a)
         assert example.text_b is None
 
-        # Account for [CLS] and [SEP] with "- 2"
         if len(tokens_a) > max_seq_length - 2:
             tokens_a = tokens_a[0:(max_seq_length - 2)]
 
-        # The convention in BERT is:
-        # (a) For sequence pairs:
-        #  tokens:   [CLS] is this jack ##son ##ville ? [SEP] no it is not . [SEP]
-        #  type_ids: 0     0  0    0    0     0       0 0     1  1  1  1   1 1
-        # (b) For single sequences:
-        #  tokens:   [CLS] the dog is hairy . [SEP]
-        #  type_ids: 0     0   0   0  0     0 0
-        #
-        # Where "type_ids" are used to indicate whether this is the first
-        # sequence or the second sequence. The embedding vectors for `type=0` and
-        # `type=1` were learned during pre-training and are added to the wordpiece
-        # embedding vector (and position vector). This is not *strictly* necessary
-        # since the [SEP] token unambiguously separates the sequences, but it makes
-        # it easier for the model to learn the concept of sequences.
-        #
-        # For classification tasks, the first vector (corresponding to [CLS]) is
-        # used as the "sentence vector". Note that this only makes sense because
-        # the entire model is fine-tuned.
         tokens = []
         segment_ids = []
         tokens.append("[CLS]_")
@@ -167,15 +148,7 @@ class FullCuBertTokenizer:
         assert len(segment_ids) == max_seq_length
 
         label_id = label_map[example.label]
-        """
-        print("*** Example ***")
-        print("guid: ", example.guid)
-        print("tokens: ", [tokenization.printable_text(x) for x in tokens])
-        print("input_ids: ", [str(x) for x in input_ids])
-        print("input_mask: ", [str(x) for x in input_mask])
-        print("segment_ids: ", [str(x) for x in segment_ids])
-        print("label: ", example.label + " id: ", label_id)
-        """
+
         feature = InputFeatures(
             input_ids=np.array(input_ids),
             input_mask=np.array(input_mask),
@@ -184,6 +157,15 @@ class FullCuBertTokenizer:
             is_real_example=True,
             guid=example.guid)
         return feature
+
+    def convert_examples_to_features(self, examples, label_list, max_seq_length):
+        """Convert a set of `InputExample`s to a list of `InputFeatures`."""
+
+        features = []
+        for (ex_index, example) in enumerate(examples):
+            feature = self.convert_single_example(example, label_list, max_seq_length)
+            features.append(feature)
+        return features
 
 
 class CuBertFunctionDocstringProcessor:
