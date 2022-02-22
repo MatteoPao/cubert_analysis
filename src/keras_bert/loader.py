@@ -140,7 +140,6 @@ def load_model_weights_from_checkpoint(model,
             loader('bert/pooler/dense/kernel'),
             loader('bert/pooler/dense/bias'),
         ])
-        #print(model.get_layer(name='NSP').)
         model.get_layer(name='NSP').set_weights([
             np.transpose(loader('output_weights')),
             loader('output_bias'),

@@ -84,7 +84,7 @@ def select_data(data_cc, label=10, quantity=1000, binary=False):
 
 def main():
     data_cc = read_data(directory)
-    data_cc = select_data(data_cc, label=6, quantity=5000, binary=True)
+    data_cc = select_data(data_cc, label=20, quantity=150, binary=True)
     save_data(data_cc)
 
 
