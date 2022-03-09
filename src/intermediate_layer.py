@@ -8,8 +8,14 @@ import json
 import sys
 import keras
 import numpy as np
+import progressbar
+
+
+
+layer_name = "Encoder-20-FeedForward-Norm"
 
 def main():
+
     print(model_path)
     print(data_path)
 
@@ -20,33 +26,74 @@ def main():
     tokenizer = FullCuBertTokenizer(code_tokenizer_class=tokenizer_registry.TokenizerEnum.PYTHON.value, vocab_file=paths.vocab)
     print("Tokenizer loaded")
 
-    #tokenizza tutto il dataset
-    #features = tokenizer.convert_examples_to_features(examples, [0, 1], 128)
-    #print(features[0].input_ids)
+    #tokenizza il dataset
+    features = tokenizer.convert_examples_to_features(examples, [0, 1], 512)
+    print("Dataset tokenized")
 
-    feature = tokenizer.convert_single_example(examples[5], [0, 1], 128)
-
-    model = load_trained_model_from_checkpoint(paths.config, paths.checkpoint, training=True, seq_len=128, out_dim=2)
+    model = load_trained_model_from_checkpoint(paths.config, paths.checkpoint, training=True,  out_dim=2)
     print("Model loaded")
     #model.summary()
 
-    layer_name = "Encoder-23-FeedForward-Norm"
     model = keras.Model(inputs=model.input, outputs=model.get_layer(layer_name).output)
+    print("Model truncated at layer " + layer_name)
     #model.summary()
 
-    int_output = model.predict([np.expand_dims(np.array(feature.input_ids), axis=0),
-                                np.expand_dims(np.array(feature.segment_ids), axis=0),
-                                np.expand_dims(np.array(feature.input_mask), axis=0)])
+    inp = []
+    seg = []
+    mas = []
+    label = []
+    for f in features:
+        inp.append(f.input_ids)
+        seg.append(f.segment_ids)
+        mas.append(f.input_mask)
+        label.append(f.label_id)
 
-    for index, line in enumerate(int_output[0]):
-        print(index, line)
-        print("Minimo: ", min(line))
-        print("Massimo: ", max(line))
+    data_input = [np.array(inp), np.array(seg), np.array(mas)]
 
-    print(np.array(int_output[0]).shape)
-    print("MinimoAssoluto: ", np.array(int_output[0]).min())
-    print("MassimoAssoluto: ", np.array(int_output[0]).max())
 
+    print("\nStarting prediction...")
+    pred_results = model.predict(data_input, batch_size=16, verbose=1)
+    pred_results = np.transpose(pred_results)
+
+    print("\nCompute and save accuracies...")
+    save_accuracies(pred_results, label)
+
+
+def save_accuracies(prediction, label):
+
+    label = np.asarray(label).astype(bool)
+    accuracies = []
+
+    for neuron in progressbar.progressbar(prediction):
+
+        accuracies.append([])
+        max = neuron.max()
+        min = neuron.min()
+        threshold = np.linspace(min, max, num=12)[1:11]
+
+        for elem in neuron:
+            best = {'acc': 0, 'th': 0}
+            for t in threshold:
+                elem_b = np.where(elem > t, True, False)
+                acc_b = (label & elem_b) | (~label & ~elem_b)
+                acc = acc_b.mean()
+
+                if (1 - acc) > acc:
+                    acc = 1 - acc
+
+                if acc > best["acc"]:
+                    best["acc"] = acc
+                    best["th"] = t
+
+            accuracies[-1].append(best)
+
+
+    # Salvo le accuratezze del layer
+    final_out = {'layer': layer_name, 'accuracies': accuracies}
+    outF = open("../results/" + layer_name + ".json", "x")
+    json_out = json.dumps(final_out)
+    outF.write(json_out)
+    outF.close()
 
 
 def read_json(input_file):
