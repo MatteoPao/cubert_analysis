@@ -10,9 +10,7 @@ import keras
 import numpy as np
 import progressbar
 
-
-
-layer_name = "Encoder-20-FeedForward-Norm"
+layer_name = "Encoder-24-FeedForward-Norm"
 
 def main():
 
@@ -50,10 +48,12 @@ def main():
 
     data_input = [np.array(inp), np.array(seg), np.array(mas)]
 
-
     print("\nStarting prediction...")
     pred_results = model.predict(data_input, batch_size=16, verbose=1)
     pred_results = np.transpose(pred_results)
+
+    with open('../results/' + layer_name + '_prediction.npy', 'wb') as file:
+        np.save(file, pred_results)
 
     print("\nCompute and save accuracies...")
     save_accuracies(pred_results, label)
