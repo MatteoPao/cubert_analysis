@@ -7,19 +7,24 @@ from operator import itemgetter
 
 def main():
     files = os.listdir(result_path)
+    result = []
     for file in files:
         if "_accuracies" in file:
-            print("\nAnalisi file: ", file)
+            name = file.replace('_accuracies.json', '')
+            print("\nAnalisi file: ", name)
             data = get_data_from_file(result_path + file)
-            best_ind = get_best_inds(data['accuracies'])
-            print(best_ind)
-            print(len(best_ind))
-            avg = get_best_avgs(data['accuracies'])
-            print(avg)
-            print(len(avg))
-            sum = get_best_sum(data['accuracies'])
-            print(sum)
-            print(len(sum))
+            best_inds = get_best_inds(data['accuracies'], elem=5)
+            print(best_inds)
+            avgs = get_best_avgs(data['accuracies'], elem=5)
+            print(avgs)
+            sums = get_best_sum(data['accuracies'], elem=5)
+            print(sums)
+
+            result.append({'layer': name,
+                         'best_inds': best_inds,
+                         'neuron_avgs': avgs,
+                         'neuron_over0.7': sums})
+    save_data(result)
 
 
 def get_data_from_file(filename):
@@ -52,6 +57,7 @@ def get_best_avgs(accuracies, elem=10):
     best_avgs = sorted(best_avgs, key=itemgetter('avg'), reverse=True)
     return best_avgs[:elem]
 
+
 def get_best_sum(accuracies, elem=10):
     best_sum = []
     for i, neuron in enumerate(accuracies):
@@ -62,6 +68,12 @@ def get_best_sum(accuracies, elem=10):
     return best_sum[:elem]
 
 
+def save_data(data):
+
+    outF = open(result_path + "layer_analysis.json", "w")
+    json_out = json.dumps(data, indent=2)
+    outF.write(json_out)
+    outF.close()
 
 
 if __name__ == "__main__":
