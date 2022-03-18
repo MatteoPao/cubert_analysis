@@ -59,7 +59,7 @@ def save_data(data_cc):
     uni_err_scr = 0
     print("\nSalvataggio dati...")
     os.mkdir('result/' + date)
-    f2 = open('result/' + date + '/data_cc_NoAWE_1955.jsontxt', 'x')
+    f2 = open('result/' + date + '/data_cc.jsontxt', 'x')
     for dt in data_cc:
         try:
             f2.write(json.dumps(dt) + "\n")
@@ -71,20 +71,20 @@ def save_data(data_cc):
     print("Scrittura - UnicodeEncodeError: ", uni_err_scr)
 
 
-def select_data(data_cc, label=10, quantity=1000, binary=False):
+def select_data(data_cc, label=[1, 2], quantity=1000, binary=False):
     sel_data = []
-    counter = np.full(label, quantity)
+    counter = np.full(label.shape, quantity)
     bn = [0, 0]
 
     for dt in data_cc:
-        if dt['label'] <= label and counter[dt['label'] - 1] > 0:
-            counter[dt['label'] - 1] -= 1
+        if (dt['label'] in label) and counter[np.where(label == dt['label'])[0][0]] > 0:
+            counter[np.where(label == dt['label'])[0][0]] -= 1
             if binary:
-                dt['label'] = 0 if dt['label'] <= label/2 else 1
+                dt['label'] = 0 if dt['label'] <= label[int(len(label)/2)-1] else 1
                 bn[dt['label']] += 1
             sel_data.append(dt)
 
-    tmp = np.full(label, quantity)
+    tmp = np.full(label.shape, quantity)
     print("\nDati Selezionati: ", tmp - counter)
     if binary:
         print("Divisi in: ", bn)
@@ -93,7 +93,7 @@ def select_data(data_cc, label=10, quantity=1000, binary=False):
 
 def main():
     data_cc = read_data(directory, includeAWE=False)
-    data_cc = select_data(data_cc, label=20, quantity=100, binary=True)
+    data_cc = select_data(data_cc, label=np.arange(3, 13), quantity=200, binary=True)
     save_data(data_cc)
 
 

@@ -10,7 +10,7 @@ import keras
 import numpy as np
 import progressbar
 
-layer_name = "Encoder-24-FeedForward-Norm"
+layer_name = "Encoder-10-FeedForward-Norm"
 
 def main():
 
@@ -55,45 +55,6 @@ def main():
     with open('../results/' + layer_name + '_prediction.npy', 'wb') as file:
         np.save(file, pred_results)
 
-    print("\nCompute and save accuracies...")
-    save_accuracies(pred_results, label)
-
-
-def save_accuracies(prediction, label):
-
-    label = np.asarray(label).astype(bool)
-    accuracies = []
-
-    for neuron in progressbar.progressbar(prediction):
-
-        accuracies.append([])
-        max = neuron.max()
-        min = neuron.min()
-        threshold = np.linspace(min, max, num=12)[1:11]
-
-        for elem in neuron:
-            best = {'acc': 0, 'th': 0}
-            for t in threshold:
-                elem_b = np.where(elem > t, True, False)
-                acc_b = (label & elem_b) | (~label & ~elem_b)
-                acc = acc_b.mean()
-
-                if (1 - acc) > acc:
-                    acc = 1 - acc
-
-                if acc > best["acc"]:
-                    best["acc"] = acc
-                    best["th"] = t
-
-            accuracies[-1].append(best)
-
-
-    # Salvo le accuratezze del layer
-    final_out = {'layer': layer_name, 'accuracies': accuracies}
-    outF = open("../results/" + layer_name + ".json", "x")
-    json_out = json.dumps(final_out)
-    outF.write(json_out)
-    outF.close()
 
 
 def read_json(input_file):

@@ -11,3 +11,5 @@ cyclomatic_complexity/result/*
 main_test.py
 /cyclomatic_complexity/code_dataset/
 /cyclomatic_complexity/result/
+/results_accuracies/
+/results_accuracies/E2/
