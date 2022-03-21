@@ -1,6 +1,10 @@
-from fitness.base_ff_classes.base_ff import base_ff
+# Questo codice è la versione eseguita su macchina
+# del notebook colab NeuronPrediction_HiddenLayer
+# i commenti è possibile trovarli nel notebook
+
+
 from keras_bert import load_trained_model_from_checkpoint, get_checkpoint_paths
-from cubert.full_cubert_tokenizer import FullCuBertTokenizer, CuBertVariableMisuseProcessor, InputExample
+from cubert.full_cubert_tokenizer import FullCuBertTokenizer, InputExample
 from cubert import tokenizer_registry
 from typing import Dict, List
 import glob
@@ -8,7 +12,6 @@ import json
 import sys
 import keras
 import numpy as np
-import progressbar
 
 layer_name = "Encoder-10-FeedForward-Norm"
 
@@ -49,7 +52,7 @@ def main():
     data_input = [np.array(inp), np.array(seg), np.array(mas)]
 
     print("\nStarting prediction...")
-    pred_results = model.predict(data_input, batch_size=16, verbose=1)
+    pred_results = model.predict(data_input, batch_size=8, verbose=1)
     pred_results = np.transpose(pred_results)
 
     with open('../results/' + layer_name + '_prediction.npy', 'wb') as file:

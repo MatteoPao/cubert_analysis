@@ -4,6 +4,7 @@ import json
 import numpy as np
 from operator import itemgetter
 
+result_path = "../results_accuracies/VM_3000/"
 
 def main():
     files = os.listdir(result_path)
@@ -26,13 +27,17 @@ def main():
                          'neuron_over0.7': sums})
     save_data(result)
 
-
+'''
+    Funzione per importare le accuratezze dal file
+'''
 def get_data_from_file(filename):
     # Opening JSON file
     f = open(filename)
     return json.load(f)
 
-
+'''
+    Funzione per la ricerca dei migliori elementi generici
+'''
 def get_best_inds(accuracies, elem=10):
     print("Num neuroni: ", len(accuracies))
     best_inds = []
@@ -46,7 +51,9 @@ def get_best_inds(accuracies, elem=10):
     best_inds = sorted(best_inds, key=itemgetter('acc'), reverse=True)
     return best_inds[:elem]
 
-
+'''
+    Funzione per la ricerca delle migliori medie per neurone
+'''
 def get_best_avgs(accuracies, elem=10):
     best_avgs = []
     for i, neuron in enumerate(accuracies):
@@ -57,7 +64,9 @@ def get_best_avgs(accuracies, elem=10):
     best_avgs = sorted(best_avgs, key=itemgetter('avg'), reverse=True)
     return best_avgs[:elem]
 
-
+'''
+    Funzione per la ricerca dei neuroni con il maggior numero di elementi con accuratezza >0.7
+'''
 def get_best_sum(accuracies, elem=10):
     best_sum = []
     for i, neuron in enumerate(accuracies):
@@ -77,6 +86,4 @@ def save_data(data):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        result_path = sys.argv[1]
     main()
