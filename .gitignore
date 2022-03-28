@@ -6,6 +6,7 @@ exception_datasets
 src/cubert/.svn
 src/cubert/README.md
 cyclomatic_complexity/result/*
+cyclomatic_complexity/cubert
 
 **/__pycache__
 main_test.py

@@ -10,12 +10,15 @@ import numpy as np
 import progressbar as pb
 
 # Modificare in base alle proprie esigenze
-layer_dir = "../results_accuracies/prediction15/"
+layer_dir = "../results_accuracies/prediction10/"
 label_dir = "../results_accuracies/"
-layer_name = "Encoder-15-FeedForward-Norm"
+save_dir = "../results_accuracies/E2_VM2800/"
+
+layer_name = "Encoder-10-FeedForward-Norm"
+label_name = "label_VM2800.npy"
 
 # Se True i label importati vengono mescolati randomicamente
-label_shuffle = False
+label_shuffle = True
 
 
 def main():
@@ -50,7 +53,7 @@ def load_prediction():
      nel notebook colab NeuronPrediction_HiddenLayer
 '''
 def load_label(shuffle=False):
-    res = np.load(label_dir + "label_2000.npy")
+    res = np.load(label_dir + label_name)
     if shuffle:
         np.random.shuffle(res)
     return res
@@ -95,9 +98,9 @@ def compute_and_save_accuracies(predictions, label):
     # Salvo le accuratezze finali
     final_out = {'layer': layer_name, 'accuracies': accuracies}
     if label_shuffle:
-        outF = open("../results_accuracies/E2_2000/" + layer_name + "_random.json", "x")
+        outF = open(save_dir + layer_name + "_random.json", "x")
     else:
-        outF = open("../results_accuracies/E2_2000/" + layer_name + "_accuracies.json", "x")
+        outF = open(save_dir + layer_name + "_accuracies.json", "x")
     json_out = json.dumps(final_out, indent=2)
     outF.write(json_out)
     outF.close()

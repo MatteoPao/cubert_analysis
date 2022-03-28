@@ -43,11 +43,12 @@ def get_best_inds(accuracies, elem=10):
     best_inds = []
     for i, neuron in enumerate(accuracies):
         for j, ind in enumerate(neuron):
-            if ind['acc'] >= 0.7:
+            if ind['acc'] >= 0.65:
                 best_inds.append({'neuron':i,
                                   'ind':j,
                                   'acc':ind['acc'],
-                                  'th':ind['th']})
+                                  'th':ind['th'],
+                                  'inv':ind['inv']})
     best_inds = sorted(best_inds, key=itemgetter('acc'), reverse=True)
     return best_inds[:elem]
 

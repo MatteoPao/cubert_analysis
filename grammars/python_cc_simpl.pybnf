@@ -1,0 +1,56 @@
+<function-definition> ::= def <fdeclarator>:{:<statements>{::}return:}
+				        | def <fdeclarator>:{:<statements>{::}return <operation>:}
+
+<fdeclarator> ::= <identifier>(<parameter-list>)
+		        | <identifier>()
+
+<identifier> ::= str | buf | version | offset | id1 | id2 | id3 | num
+
+<parameter-list> ::= <identifier>
+                   | <parameter-list>, <identifier>
+
+<statements> ::= <statement> | <statement>{::}<statements>
+
+<statement> ::= <identifier> = <operation>
+		| <selection-statement>
+		| <custom-statement>
+        | while <boolean-expression>:{:<statements>:}
+
+<operation> ::= <primary-expression>
+               | <primary-expression> <operator> <primary-expression>
+               | <primary-expression> <operator> <primary-expression> <operator> <primary-expression>
+               | <primary-expression> <operator> <primary-expression> <operator> <primary-expression> <operator> <primary-expression>
+               | []
+
+<operator> ::= +|-|*|/
+
+<selection-statement> ::= if <boolean-expression>:{:<statements>:}
+                        | if <boolean-expression>:{:<statements>:}else:{:<statements>:}
+
+<primary-expression> ::= <identifier>
+                       | <constant>
+					   | <identifier>[<digits>]
+
+<constant> ::= <integer-constant>
+             | <character-constant>
+
+<integer-constant> ::= <digits> 
+			| -<digits>
+
+<digits> ::= <digit> | <digits><digit>
+
+<digit> ::= 0|1|2|3|4|5|6|7|8|9
+
+<character-constant> ::= 'a'|'b'|'c'|'d'|'e'
+
+<boolean-expression> ::= <operation> >= <operation>
+			| <operation> <= <operation>
+			| <operation> == <operation>
+			| <operation> != <operation>
+
+
+<custom-statement> ::= <identifier>.pop()
+			| <identifier>.append(<primary-expression>)
+			| len(<identifier>)
+			| int(<identifier>)
+			| float(<identifier>)
