@@ -67,8 +67,8 @@ class intermediate_layer_e2(base_ff):
         while len(input_ids) < 512:
             input_ids.append(0)
 
-        ind_input = [np.array(input_ids), np.zeros(512)]
+        ind_input = [np.array(input_ids, ndmin=2), np.zeros((1, 512))]
 
-        ind_output = self.model([ind_input, 0])[0]
+        ind_output = self.model([ind_input, 0])[0][0]
 
         return ind_output[self.x][self.y]
