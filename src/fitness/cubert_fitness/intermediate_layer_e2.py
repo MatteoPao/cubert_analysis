@@ -49,6 +49,8 @@ class intermediate_layer_e2(base_ff):
         self.x = 376    # Indice neurone
         self.y = 357    # Indice individuo
 
+        # self.min_ind = 0
+
         # Carica il modello
         self.model = load_trained_model_from_checkpoint(paths.config, paths.checkpoint, training=False)
         self.model = K.function([self.model.input], [self.model.get_layer(layer_name).output])
@@ -61,7 +63,7 @@ class intermediate_layer_e2(base_ff):
 
         token = self.tokenizer.tokenize(ind.phenotype)
         if len(token) > 512:
-            return -10
+            return -2
 
         input_ids = self.tokenizer.convert_tokens_to_ids(token)
         while len(input_ids) < 512:
@@ -72,3 +74,16 @@ class intermediate_layer_e2(base_ff):
         ind_output = self.model([ind_input, 0])[0][0]
 
         return ind_output[self.x][self.y]
+
+"""
+        res = ind_output[self.x][self.y]
+        if res < self.min_ind:
+          self.min_ind = res
+        
+        if res > self.n_max:
+          self.n_max = res
+          print("FITNESS: ", res)
+          print("CODICE: \n", ind.phenotype)
+
+        return res
+"""
