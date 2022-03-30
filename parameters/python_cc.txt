@@ -2,7 +2,7 @@ CACHE:                  True
 CODON_SIZE:             100000
 CROSSOVER:              variable_onepoint
 CROSSOVER_PROBABILITY:  0.75
-GENERATIONS:            30
+GENERATIONS:            3
 MAX_GENOME_LENGTH:      500
 GRAMMAR_FILE:           python_cc_simpl.pybnf
 INITIALISATION:         PI_grow
@@ -17,4 +17,5 @@ REPLACEMENT:            generational
 SELECTION:              tournament
 TOURNAMENT_SIZE:        2
 VERBOSE:                True
-DEBUG:                  False
+SAVE_ALL:               True
+DEBUG:                  True

@@ -4,7 +4,7 @@
 <fdeclarator> ::= <identifier>(<parameter-list>)
 		        | <identifier>()
 
-<identifier> ::= str | buf | version | offset | id1 | id2 | id3 | num
+<identifier> ::= str | buf | value | offset | num | id1 | id2 | id3 | id4
 
 <parameter-list> ::= <identifier>
                    | <parameter-list>, <identifier>
@@ -13,19 +13,24 @@
 
 <statement> ::= <identifier> = <operation>
 		| <selection-statement>
+		| <loop-statement>
 		| <custom-statement>
-        | while <boolean-expression>:{:<statements>:}
+		|
 
 <operation> ::= <primary-expression>
                | <primary-expression> <operator> <primary-expression>
                | <primary-expression> <operator> <primary-expression> <operator> <primary-expression>
-               | <primary-expression> <operator> <primary-expression> <operator> <primary-expression> <operator> <primary-expression>
-               | []
+               | <cast-statement>
 
 <operator> ::= +|-|*|/
 
 <selection-statement> ::= if <boolean-expression>:{:<statements>:}
                         | if <boolean-expression>:{:<statements>:}else:{:<statements>:}
+
+<loop-statement> ::= while <boolean-expression>:{:<statements>:}
+                   | for <identifier> in range(<digits>):{:<statements>:}
+                   | for <identifier> in <identifier>:{:<statements>:}
+
 
 <primary-expression> ::= <identifier>
                        | <constant>
@@ -33,6 +38,9 @@
 
 <constant> ::= <integer-constant>
              | <character-constant>
+             | []
+             | True
+             | False
 
 <integer-constant> ::= <digits> 
 			| -<digits>
@@ -50,7 +58,13 @@
 
 
 <custom-statement> ::= <identifier>.pop()
-			| <identifier>.append(<primary-expression>)
-			| len(<identifier>)
-			| int(<identifier>)
-			| float(<identifier>)
+			         | <identifier>.append(<primary-expression>)
+			         | func(<identifier>)
+			         | print("<str-template>")
+
+<str-template> ::= "String"
+                 | "Hello World!"
+
+<cast-statement> ::= int(<identifier>)
+			       | float(<identifier>)
+			       | str(<identifier>)

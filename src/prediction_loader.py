@@ -10,23 +10,23 @@ import numpy as np
 import progressbar as pb
 
 # Modificare in base alle proprie esigenze
-layer_dir = "../results_accuracies/prediction10/"
-label_dir = "../results_accuracies/"
-save_dir = "../results_accuracies/E2_VM2800/"
+layer_dir = "../results_accuracies/accuracies_3to12_FT/prediction5/results/"
+label_dir = "../cyclomatic_complexity/final/3to12_2000bin_FT/"
+save_dir = "../results_accuracies/accuracies_3to12_FT/"
 
-layer_name = "Encoder-10-FeedForward-Norm"
-label_name = "label_VM2800.npy"
-
-# Se True i label importati vengono mescolati randomicamente
-label_shuffle = True
+layer_name = "Encoder-5-FeedForward-Norm"
+label_name = "labels.npy"
 
 
 def main():
-    label = load_label(shuffle=label_shuffle)
+    label = load_label(shuffle=False)
+    label_shuffled = load_label(shuffle=True)
     print("Load predictions...")
     prediction = load_prediction()
     print("Compute and save accuracies...")
-    compute_and_save_accuracies(prediction, label)
+    compute_and_save_accuracies(prediction, label, False)
+    print("Compute and save accuracies shuffled...")
+    compute_and_save_accuracies(prediction, label_shuffled, True)
 
 '''
  Questa funzione importa gli array con le previsioni 
@@ -63,7 +63,7 @@ def load_label(shuffle=False):
  Implementazione dello pseudocodice per il calcolo delle accuratezze
  veridicando diversi threshold
 '''
-def compute_and_save_accuracies(predictions, label):
+def compute_and_save_accuracies(predictions, label, shuffle):
     label = np.asarray(label).astype(bool)
     accuracies = []
 
@@ -97,7 +97,7 @@ def compute_and_save_accuracies(predictions, label):
 
     # Salvo le accuratezze finali
     final_out = {'layer': layer_name, 'accuracies': accuracies}
-    if label_shuffle:
+    if shuffle:
         outF = open(save_dir + layer_name + "_random.json", "x")
     else:
         outF = open(save_dir + layer_name + "_accuracies.json", "x")

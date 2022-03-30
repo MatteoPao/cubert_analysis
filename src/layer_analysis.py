@@ -4,7 +4,7 @@ import json
 import numpy as np
 from operator import itemgetter
 
-result_path = "../results_accuracies/E2_2000/"
+result_path = "../results_accuracies/accuracies_3to12_FT/"
 
 def main():
     files = os.listdir(result_path)

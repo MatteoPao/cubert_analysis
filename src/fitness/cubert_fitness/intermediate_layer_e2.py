@@ -7,7 +7,10 @@ import keras.backend as K
 import numpy as np
 
 model_path = "fitness/cubert_fitness/cubert_pretrained_model_epochs_2"
-
+layer_name = "Encoder-5-FeedForward-Norm"
+x = 803  # Indice neurone
+y = 0  # Indice individuo
+inv = True
 
 class intermediate_layer_e2(base_ff):
     """
@@ -38,18 +41,15 @@ class intermediate_layer_e2(base_ff):
     # Note that if fitness is being minimised, it is not necessary to
     # re-define/overwrite the maximise attribute here, as it already exists
     # in the base fitness function class.
-    maximise = True
+    maximise = not inv
 
     def __init__(self):
         # Initialise base fitness function class.
         super().__init__()
 
         paths = get_checkpoint_paths(model_path)
-        layer_name = "Encoder-10-FeedForward-Norm"
-        self.x = 376    # Indice neurone
-        self.y = 357    # Indice individuo
 
-        # self.min_ind = 0
+        self.worst_ind = 0
 
         # Carica il modello
         self.model = load_trained_model_from_checkpoint(paths.config, paths.checkpoint, training=False)
@@ -73,17 +73,10 @@ class intermediate_layer_e2(base_ff):
 
         ind_output = self.model([ind_input, 0])[0][0]
 
-        return ind_output[self.x][self.y]
+        # return ind_output[self.x][self.y]
 
-"""
         res = ind_output[self.x][self.y]
-        if res < self.min_ind:
-          self.min_ind = res
-        
-        if res > self.n_max:
-          self.n_max = res
-          print("FITNESS: ", res)
-          print("CODICE: \n", ind.phenotype)
+        if (self.maximise and res < self.worst_ind) or (not self.maximise and res > self.worst_ind):
+            self.worst_ind = res
 
         return res
-"""
