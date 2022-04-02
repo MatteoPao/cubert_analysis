@@ -19,3 +19,5 @@ TOURNAMENT_SIZE:        2
 VERBOSE:                True
 SAVE_ALL:               True
 DEBUG:                  True
+ELITE_SIZE:             5
+MUTATE_DUPLICATES:      True

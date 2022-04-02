@@ -33,7 +33,7 @@ def main():
 
     data_cc = read_data(directory, tokenizer, includeTrunc=False, includeAWE=True)
     print(data_cc[0])
-    data_cc = select_data(data_cc, label=np.arange(1, 11), quantity=200, binary=True)
+    data_cc = select_data(data_cc, label=np.array([1, 2, 3, 4, 5, 6, 12, 13, 14, 15, 16, 17])ùùùùùùùùù, quantity=200, binary=True)
     save_data(data_cc)
     save_features(data_cc, tokenizer)
 

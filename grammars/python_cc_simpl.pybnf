@@ -12,15 +12,14 @@
 <statements> ::= <statement> | <statement>{::}<statements>
 
 <statement> ::= <identifier> = <operation>
-		| <selection-statement>
-		| <loop-statement>
-		| <custom-statement>
-		|
+		      | <selection-statement>
+		      | <loop-statement>
+		      | <custom-statement>
 
 <operation> ::= <primary-expression>
-               | <primary-expression> <operator> <primary-expression>
-               | <primary-expression> <operator> <primary-expression> <operator> <primary-expression>
-               | <cast-statement>
+              | <primary-expression> <operator> <primary-expression>
+              | <primary-expression> <operator> <primary-expression> <operator> <primary-expression>
+              | <cast-statement>
 
 <operator> ::= +|-|*|/
 
@@ -39,8 +38,7 @@
 <constant> ::= <integer-constant>
              | <character-constant>
              | []
-             | True
-             | False
+
 
 <integer-constant> ::= <digits> 
 			| -<digits>
@@ -55,12 +53,14 @@
 			| <operation> <= <operation>
 			| <operation> == <operation>
 			| <operation> != <operation>
+			| True
+            | False
 
 
 <custom-statement> ::= <identifier>.pop()
 			         | <identifier>.append(<primary-expression>)
 			         | func(<identifier>)
-			         | print("<str-template>")
+			         | print(<str-template>)
 
 <str-template> ::= "String"
                  | "Hello World!"

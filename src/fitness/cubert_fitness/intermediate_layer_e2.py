@@ -8,8 +8,8 @@ import numpy as np
 
 model_path = "fitness/cubert_fitness/cubert_pretrained_model_epochs_2"
 layer_name = "Encoder-5-FeedForward-Norm"
-x = 803  # Indice neurone
-y = 0  # Indice individuo
+neuron = 803  # Indice neurone
+elem = 0  # Indice individuo
 inv = True
 
 class intermediate_layer_e2(base_ff):
@@ -59,6 +59,11 @@ class intermediate_layer_e2(base_ff):
         self.tokenizer = FullCuBertTokenizer(code_tokenizer_class=tokenizer_registry.TokenizerEnum.PYTHON.value, vocab_file=paths.vocab)
         print("tokenizer loaded")
 
+        print("------ Impostazioni ------")
+        print("Neurone: ", neuron)
+        print("Elem: ", elem)
+        print("maximize: ", self.maximise)
+
     def evaluate(self, ind, **kwargs):
 
         token = self.tokenizer.tokenize(ind.phenotype)
@@ -73,9 +78,9 @@ class intermediate_layer_e2(base_ff):
 
         ind_output = self.model([ind_input, 0])[0][0]
 
-        # return ind_output[self.x][self.y]
+        # return ind_output[elem][neuron]
 
-        res = ind_output[self.x][self.y]
+        res = ind_output[elem][neuron]
         if (self.maximise and res < self.worst_ind) or (not self.maximise and res > self.worst_ind):
             self.worst_ind = res
 

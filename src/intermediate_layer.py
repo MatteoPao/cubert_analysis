@@ -10,13 +10,11 @@ from typing import Dict, List
 import glob
 import json
 import sys
-import keras
 import numpy as np
-
-layer_name = "Encoder-10-FeedForward-Norm"
+import keras.backend as K
+import progressbar
 
 def main():
-
     print(model_path)
     print(data_path)
 
@@ -31,33 +29,35 @@ def main():
     features = tokenizer.convert_examples_to_features(examples, [0, 1], 512)
     print("Dataset tokenized")
 
-    model = load_trained_model_from_checkpoint(paths.config, paths.checkpoint, training=True,  out_dim=2)
+    # Carica il checkpoint
+    model = load_trained_model_from_checkpoint(paths.config, paths.checkpoint, training=False)
+    # model.summary()
+
+    # Prima alternativa, tronca il modello con keras.backend (Consigliato per risparmiare memoria)
+    model = K.function([model.input], [model.get_layer(layer_name).output])
     print("Model loaded")
-    #model.summary()
 
-    model = keras.Model(inputs=model.input, outputs=model.get_layer(layer_name).output)
-    print("Model truncated at layer " + layer_name)
-    #model.summary()
-
-    inp = []
-    seg = []
-    mas = []
+    inp, seg, mas = [], [], []
     label = []
+
     for f in features:
         inp.append(f.input_ids)
         seg.append(f.segment_ids)
         mas.append(f.input_mask)
         label.append(f.label_id)
 
-    data_input = [np.array(inp), np.array(seg), np.array(mas)]
+    batched_input = []
+    for index in range(int(len(inp) / 8)):
+        step = int(index * 8)
+        batched_input.append([np.array(inp[step:step + 8]), np.array(mas[step:step + 8])])
+    print(np.asarray(batched_input).shape)
 
-    print("\nStarting prediction...")
-    pred_results = model.predict(data_input, batch_size=8, verbose=1)
-    pred_results = np.transpose(pred_results)
-
-    with open('../results/' + layer_name + '_prediction.npy', 'wb') as file:
-        np.save(file, pred_results)
-
+    count = 0
+    for input_data in progressbar.progressbar(batched_input):
+        batched_output = model([input_data, 0])[0]
+        with open('results/' + layer_name + '/prediction_' + str(count) + '.npy', 'wb') as file:
+            np.save(file, batched_output)
+        count += 1
 
 
 def read_json(input_file):
@@ -86,7 +86,8 @@ def read_examples_from_json(data_dir, set_type):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 3:
+    if len(sys.argv) == 4:
         model_path = sys.argv[1]
         data_path = sys.argv[2]
+        layer_name = sys.argv[3]
     main()
