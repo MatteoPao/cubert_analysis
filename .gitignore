@@ -15,3 +15,4 @@ main_test.py
 /results_accuracies/
 !/results_accuracies/**/layer_analysis.json
 
+/results_accuracies/E2_2000/
