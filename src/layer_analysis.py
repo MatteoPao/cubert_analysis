@@ -86,5 +86,3 @@ def save_data(data):
     outF.close()
 
 
-if __name__ == "__main__":
-    main()

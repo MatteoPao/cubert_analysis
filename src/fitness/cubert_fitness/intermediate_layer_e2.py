@@ -53,7 +53,7 @@ class intermediate_layer_e2(base_ff):
 
         self.worst_ind = 0
 
-        out_f = open("over_th.txt", "x")
+        out_f = open("over_th.txt", "a")
         out_f.write("Individui migliori del threshold -------\n")
         out_f.close()
 
@@ -75,7 +75,8 @@ class intermediate_layer_e2(base_ff):
 
         token = self.tokenizer.tokenize(ind.phenotype)
         if len(token) > 512:
-            return -2
+            # print("Ind. over 512 token")
+            return self.worst_ind
 
         input_ids = self.tokenizer.convert_tokens_to_ids(token)
         while len(input_ids) < 512:
