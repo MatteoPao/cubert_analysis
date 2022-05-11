@@ -32,8 +32,7 @@ def main():
                                     vocab_file="../src/fitness/cubert_fitness/cubert_pretrained_model_variablemisuse/vocab.txt")
 
     data_cc = read_data(directory, tokenizer, includeTrunc=False, includeAWE=True)
-    print(data_cc[0])
-    data_cc = select_data(data_cc, label=np.array([1, 2, 3, 4, 5, 6, 12, 13, 14, 15, 16, 17])ùùùùùùùùù, quantity=200, binary=True)
+    data_cc = select_data(data_cc, label=np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]), quantity=150, binary=True)
     save_data(data_cc)
     save_features(data_cc, tokenizer)
 
@@ -48,7 +47,7 @@ def existAWE(function):
     tmp = re.sub(r"(\"[^\"]*\")|(\'[^\']*\')", "\"template\"", function)
 
     # Ricerca delle parole nel codice
-    if re.findall(r"(except )|(with )|(assert )", tmp):
+    if re.findall(r"(except )|(except:)|(with )|(with:)|(assert )", tmp):
         return True
 
     return False
