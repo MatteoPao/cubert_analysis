@@ -4,7 +4,7 @@ import json
 import numpy as np
 from operator import itemgetter
 
-result_path = "../results_accuracies/accuracies_1-6to12-17_FT/"
+result_path = "../results_accuracies/Final_1-6to12-17_FT_VM/"
 
 def main():
     files = os.listdir(result_path)
@@ -85,4 +85,5 @@ def save_data(data):
     outF.write(json_out)
     outF.close()
 
-
+if __name__ == "__main__":
+    main()

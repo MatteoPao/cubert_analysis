@@ -14,5 +14,6 @@ main_test.py
 /cyclomatic_complexity/result/
 /results_accuracies/
 !/results_accuracies/**/layer_analysis.json
+!/results_accuracies/Final_**
 
 /results_accuracies/E2_2000/

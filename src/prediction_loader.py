@@ -10,13 +10,12 @@ import numpy as np
 import progressbar as pb
 
 # Modificare in base alle proprie esigenze
-layer_dir = "../results_accuracies/accuracies_1-6to12-17_FT/prediction/Encoder-5-FeedForward-Norm/"
+layer_dir = "../results_accuracies/Final_1-6to12-17_FT_VM/prediction24/"
 label_dir = "../cyclomatic_complexity/final/1-6to12-17_2400bin_FT/"
-save_dir = "../results_accuracies/accuracies_1-6to12-17_FT/"
+save_dir = "../results_accuracies/Final_1-6to12-17_FT_VM/"
 
-layer_name = "Encoder-5-FeedForward-Norm"
+layer_name = "Encoder-24-FeedForward-Norm"
 label_name = "labels.npy"
-
 
 def main():
     label = load_label(shuffle=False)
@@ -38,8 +37,8 @@ def load_prediction():
     num_files = len(os.listdir(layer_dir))
     out = []
     for index in pb.progressbar(range(num_files)):
-        # filename = layer_name + "_prediction_" + str(index)+".npy"
-        filename = "prediction_" + str(index) + ".npy"
+        filename = layer_name + "_prediction_" + str(index)+".npy"
+        #filename = layer_name + str(index) + ".npy"
         out.append(np.load(layer_dir + filename))
 
     out = np.asarray(out)

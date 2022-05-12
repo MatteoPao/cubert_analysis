@@ -1,4 +1,5 @@
 bert-tensorflow
+numpy
 dopamine-rl==3.0.1
 regex
 tensor2tensor
