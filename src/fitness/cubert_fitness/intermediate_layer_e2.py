@@ -8,10 +8,10 @@ import numpy as np
 
 model_path = "fitness/cubert_fitness/cubert_pretrained_model_epochs_2"
 layer_name = "Encoder-5-FeedForward-Norm"
-neuron = 803  # Indice neurone
-elem = 0  # Indice individuo
-th = -0.179
-inv = True
+neuron_x = 376  # Indice neurone
+neuron_y = 282  # Indice individuo
+th = -1.63
+inv = False
 
 
 class intermediate_layer_e2(base_ff):
@@ -67,8 +67,8 @@ class intermediate_layer_e2(base_ff):
         print("tokenizer loaded")
 
         print("------ Impostazioni ------")
-        print("Neurone: ", neuron)
-        print("Elem: ", elem)
+        print("Neurone - Coordinata x : ", neuron_x)
+        print("Neurone - Coordinata y : ", neuron_y)
         print("maximize: ", self.maximise)
 
     def evaluate(self, ind, **kwargs):
@@ -86,9 +86,9 @@ class intermediate_layer_e2(base_ff):
 
         ind_output = self.model([ind_input, 0])[0][0]
 
-        # return ind_output[elem][neuron]
+        # return ind_output[neuron_y][neuron_x]
 
-        res = ind_output[elem][neuron]
+        res = ind_output[neuron_y][neuron_x]
         if (self.maximise and res < self.worst_ind) or (not self.maximise and res > self.worst_ind):
             self.worst_ind = res
 
